@@ -19,7 +19,7 @@ jobs:
 
       - name: Fetch latest Docker image
         run: |
-          IMAGE_TAG=$(docker pull my-image:latest | grep 'Digest:' | awk '{print $2}')
+          IMAGE_TAG=$(docker pull mkkuzi/kasim-runpod-test:${GITHUB_REF_NAME#v} | grep 'Digest:' | awk '{print $2}')
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
 
       - name: Update RunPod template
