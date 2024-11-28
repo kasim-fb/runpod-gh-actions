@@ -52,4 +52,6 @@ jobs:
           - RunPod template updated with the new image version.
         draft: false
         prerelease: false
-        commitish: main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
