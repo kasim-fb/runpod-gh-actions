@@ -45,8 +45,8 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }} # Explicitly provide the GitHub token
-        tag_name: v$(cat VERSION.txt) # Tag version
+        token: ${{ secrets.GITHUB_TOKEN }} # Pass the GitHub token
+        tag_name: v$(cat VERSION.txt)      # Use the version as the tag
         release_name: Docker Image Release $(cat VERSION.txt)
         body: |
           - Docker Image: `mkkuzi/kasim-runpod-test:$(cat VERSION.txt)`
