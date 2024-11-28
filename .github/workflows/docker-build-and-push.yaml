@@ -1,0 +1,55 @@
+name: Build, Push, Update RunPod, and Create Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-push-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build Docker Image
+      id: build
+      run: |
+        IMAGE_NAME=mkkuzi/kasim-runpod-test
+        VERSION=$(date +%Y%m%d%H%M%S) # Timestamp for versioning
+        docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$VERSION .
+        echo $VERSION > VERSION.txt
+
+    - name: Push Docker Image
+      run: |
+        IMAGE_NAME=mkkuzi/kasim-runpod-test
+        VERSION=$(cat VERSION.txt)
+        docker push $IMAGE_NAME:latest
+        docker push $IMAGE_NAME:$VERSION
+
+    - name: Update RunPod Template
+      run: |
+        IMAGE_NAME=mkkuzi/kasim-runpod-test
+        VERSION=$(cat VERSION.txt)
+        curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.RUNPOD_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{"templateId": "ti08xt5xpn", "containerImage": "'$IMAGE_NAME:$VERSION'"}' \
+          https://api.runpod.io/v1/templates/update
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: v$(cat VERSION.txt) # Create a versioned tag
+        release_name: Docker Image Release $(cat VERSION.txt)
+        body: |
+          - Docker Image: `mkkuzi/kasim-runpod-test:$(cat VERSION.txt)`
+          - RunPod template updated with the new image version.
+        draft: false
+        prerelease: false
+        commitish: main
