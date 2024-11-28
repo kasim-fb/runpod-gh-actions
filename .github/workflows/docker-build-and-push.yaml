@@ -1,4 +1,4 @@
-name: Build, Push, Update RunPod, and Create Release
+name: Build, Push, and Update RunPod Template
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-push-release:
+  build-push-runpod:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,18 +40,3 @@ jobs:
           -H "Content-Type: application/json" \
           -d '{"templateId": "ti08xt5xpn", "containerImage": "'$IMAGE_NAME:$VERSION'"}' \
           https://api.runpod.io/v1/templates/update
-
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        token: ${{ secrets.RELEASE_TOKEN }} # Pass the GitHub token
-        tag_name: v$(cat VERSION.txt)      # Use the version as the tag
-        release_name: Docker Image Release $(cat VERSION.txt)
-        body: |
-          - Docker Image: `mkkuzi/kasim-runpod-test:$(cat VERSION.txt)`
-          - RunPod template updated with the new image version.
-        draft: false
-        prerelease: false
-
-
