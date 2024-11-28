@@ -45,7 +45,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }} # Pass the GitHub token
+        token: ${{ secrets.RELEASE_TOKEN }} # Pass the GitHub token
         tag_name: v$(cat VERSION.txt)      # Use the version as the tag
         release_name: Docker Image Release $(cat VERSION.txt)
         body: |
