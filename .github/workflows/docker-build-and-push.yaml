@@ -45,6 +45,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: v$(cat VERSION.txt) # Create a versioned tag
         release_name: Docker Image Release $(cat VERSION.txt)
         body: |
@@ -52,6 +53,4 @@ jobs:
           - RunPod template updated with the new image version.
         draft: false
         prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
